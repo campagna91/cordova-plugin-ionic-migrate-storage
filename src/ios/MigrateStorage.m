@@ -14,13 +14,13 @@
 
 #define TAG @"\nMigrateStorage"
 
-#define LOCALSTORAGE_DIRPATH @"WebKit/WebsiteData/LocalStorage/"
+#define DEFAULT_ORIGINAL_LOCALSTORAGE_DIRPATH @"WebKit/WebsiteData/LocalStorage/"
 
 #define DEFAULT_TARGET_HOSTNAME @"localhost"
 #define DEFAULT_TARGET_SCHEME @"ionic"
 #define DEFAULT_TARGET_PORT_NUMBER @"0"
 
-#define DEFAULT_ORIGINAL_HOSTNAME @""
+#define DEFAULT_ORIGINAL_HOSTNAME @"localhost"
 #define DEFAULT_ORIGINAL_SCHEME @"http"
 #define DEFAULT_ORIGINAL_PORT_NUMBER @"8080"
 
@@ -32,10 +32,13 @@
 #define SETTING_ORIGINAL_HOSTNAME @"MIGRATE_STORAGE_ORIGINAL_HOSTNAME"
 #define SETTING_ORIGINAL_SCHEME @"MIGRATE_STORAGE_ORIGINAL_SCHEME"
 
+#define SETTING_ORIGINAL_LOCALSTORAGE_DIRPATH @"MIGRATE_STORAGE_ORIGINAL_LOCALSTORAGE_DIRPATH"
+
 @interface MigrateStorage ()
     @property (nonatomic, assign) NSString *originalPortNumber;
     @property (nonatomic, assign) NSString *originalHostname;
     @property (nonatomic, assign) NSString *originalScheme;
+    @property (nonatomic, assign) NSString *originalLocalStorageDirPath;
     @property (nonatomic, assign) NSString *targetPortNumber;
     @property (nonatomic, assign) NSString *targetHostname;
     @property (nonatomic, assign) NSString *targetScheme;
@@ -100,9 +103,9 @@
 
     NSString *targetLocalStorageFileName = [targetPath stringByAppendingString:@".localstorage"];
 
-    NSString *originalLocalStorageFilePath = [[appLibraryFolder stringByAppendingPathComponent:LOCALSTORAGE_DIRPATH] stringByAppendingPathComponent:originalLocalStorageFileName];
+    NSString *originalLocalStorageFilePath = [[appLibraryFolder stringByAppendingPathComponent:self.originalLocalStorageDirPath] stringByAppendingPathComponent:originalLocalStorageFileName];
 
-    NSString *targetLocalStorageFilePath = [[appLibraryFolder stringByAppendingPathComponent:LOCALSTORAGE_DIRPATH] stringByAppendingPathComponent:targetLocalStorageFileName];
+    NSString *targetLocalStorageFilePath = [[appLibraryFolder stringByAppendingPathComponent:DEFAULT_ORIGINAL_LOCALSTORAGE_DIRPATH] stringByAppendingPathComponent:targetLocalStorageFileName];
 
     logDebug(@"%@ LocalStorage original %@", TAG, originalLocalStorageFilePath);
     logDebug(@"%@ LocalStorage target %@", TAG, targetLocalStorageFilePath);
@@ -140,7 +143,7 @@
             logDebug(@"sqlite3_exec return code: %i", exec_rc);
 
             sqlite3_close(oldLocalStorageDB);
-                                    logDebug(@"After sqlite3_close");
+            logDebug(@"After sqlite3_close");
         } else {
             logDebug(@"sqlite3_open_v2 failed? return code: %i", open_rc);
         }
@@ -201,6 +204,13 @@
     self.targetScheme = [cdvSettings cordovaSettingForKey:SETTING_TARGET_SCHEME];
     if([self.targetScheme length] == 0) {
         self.targetScheme = DEFAULT_TARGET_SCHEME;
+    }
+    
+    self.originalLocalStorageDirPath = [cdvSettings cordovaSettingForKey:SETTING_ORIGINAL_LOCALSTORAGE_DIRPATH];
+    if([self.originalLocalStorageDirPath length] == 0) {
+        self.originalLocalStorageDirPath = DEFAULT_ORIGINAL_LOCALSTORAGE_DIRPATH;
+    }else{
+        self.originalLocalStorageDirPath = SETTING_ORIGINAL_LOCALSTORAGE_DIRPATH;
     }
 
     [self migrateLocalStorage];
