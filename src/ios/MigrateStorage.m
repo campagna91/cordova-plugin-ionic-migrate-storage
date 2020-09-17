@@ -9,7 +9,7 @@
 #ifdef DEBUG_MODE
 #   define logDebug(...) NSLog(__VA_ARGS__)
 #else
-#   define logDebug(...)
+#   define logDebug(...) NSLog(__VA_ARGS__)
 #endif
 
 #define TAG @"\nMigrateStorage"
