@@ -209,10 +209,7 @@
     self.originalLocalStorageDirPath = [cdvSettings cordovaSettingForKey:SETTING_ORIGINAL_LOCALSTORAGE_DIRPATH];
     if([self.originalLocalStorageDirPath length] == 0) {
         self.originalLocalStorageDirPath = DEFAULT_ORIGINAL_LOCALSTORAGE_DIRPATH;
-    }else{
-        self.originalLocalStorageDirPath = SETTING_ORIGINAL_LOCALSTORAGE_DIRPATH;
     }
-
     [self migrateLocalStorage];
 
     logDebug(@"%@ end pluginInitialize()", TAG);
